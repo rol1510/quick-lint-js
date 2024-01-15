@@ -13,31 +13,33 @@ void random_bytes(std::uint8_t *bytes, std::size_t len) {
   }
 }
 
-int main() {
-  // ValueNode t(ValueNodeType::True);
-  // ValueNode f(ValueNodeType::False);
-  // BinaryExprNode node(BinaryOperatorType::LogicalAnd, &t, &f);
-  // BinaryExprNode node2(BinaryOperatorType::LogicalOr, &node, &f);
-
-  // std::uint8_t bytes[] = {25, 5, 23, 12, 12};
-  // std::size_t len = LENGTH(bytes);
-
-  std::uint8_t bytes[20];
-  std::size_t len = LENGTH(bytes);
-
-  for (std::size_t i = 0; i < 10000; i++) {
-    std::srand(69 + i);
-    random_bytes(bytes, len);
-
-    // // print bytes
-    // cout << "bytes: ";
-    // for (std::size_t i = 0; i < len; i++) {
-    //   cout << (int)bytes[i] << " ";
-    // }
-    // cout << endl;
-
-    generate(bytes, len);
+int main(int argc, char **argv) {
+  if (argc != 2) {
+    cerr << "Usage: " << argv[0] << " <corpus file>" << endl;
+    return 1;
   }
+
+  // read binary file
+  FILE *fp = fopen(argv[1], "rb");
+  if (!fp) {
+    cerr << "Failed to open file: " << argv[1] << endl;
+    return 1;
+  }
+
+  fseek(fp, 0, SEEK_END);
+  size_t size = ftell(fp);
+  fseek(fp, 0, SEEK_SET);
+
+  uint8_t *bytes = new uint8_t[size];
+  fread(bytes, 1, size, fp);
+  fclose(fp);
+
+  std::stringstream ss;
+  generate(bytes, size, ss);
+
+  cout << ss.str() << endl;
+
+  delete[] bytes;
 
   return 0;
 }

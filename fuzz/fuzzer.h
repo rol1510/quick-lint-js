@@ -11,6 +11,7 @@
 
 class Node {
  public:
+  virtual ~Node(){};
   virtual void render(std::stringstream &output) = 0;
 };
 
@@ -26,6 +27,7 @@ class ValueNode : public Node {
 
  public:
   ValueNode(ValueNodeType type) { this->type = type; }
+  ~ValueNode() {}
 
   void render(std::stringstream &output) {
     switch (type) {
@@ -79,6 +81,10 @@ class BinaryExprNode : public Node {
     this->braces = braces;
     this->left = left;
     this->right = right;
+  }
+  ~BinaryExprNode() {
+    if (left != nullptr) delete left;
+    if (right != nullptr) delete right;
   }
 
   void render(std::stringstream &output) {
@@ -135,8 +141,8 @@ class BinaryExprNode : public Node {
     case BinaryOperatorType::LogicalOr:
       output << " || ";
       break;
-    default:
-      throw std::runtime_error("unknown binary operator type");
+      // default:
+      //   throw std::runtime_error("unknown binary operator type");
     }
     right->render(output);
     if (braces) {
@@ -197,7 +203,8 @@ class ExprProduction : public Production {
   }
 };
 
-void generate(std::uint8_t *bytes, std::size_t len) {
+void generate(std::uint8_t *bytes, std::size_t len, std::stringstream &output) {
+  std::srand(69);
   std::queue<Production *> queue;
 
   Node *root;
@@ -206,7 +213,7 @@ void generate(std::uint8_t *bytes, std::size_t len) {
 
   while (len > consumed) {
     if (queue.empty()) {
-      std::cerr << "finished prematurely" << std::endl;
+      // std::cerr << "finished prematurely" << std::endl;
       break;
     }
 
@@ -215,6 +222,7 @@ void generate(std::uint8_t *bytes, std::size_t len) {
 
     std::uint8_t *remaining = bytes + consumed;
     consumed += p->produce(remaining, len - consumed, queue);
+    delete p;
   }
 
   // cout << "consumed:   " << consumed << endl;
@@ -225,11 +233,12 @@ void generate(std::uint8_t *bytes, std::size_t len) {
     Production *p = queue.front();
     queue.pop();
     p->produceBaseCase();
+    delete p;
   }
 
-  std::stringstream rendered;
-  root->render(rendered);
-  std::cout << rendered.str() << ";" << std::endl;
+  root->render(output);
+
+  delete root;
 }
 
 /**
