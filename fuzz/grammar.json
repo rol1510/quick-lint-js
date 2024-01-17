@@ -1,0 +1,16 @@
+{
+  "productions": [
+    {
+      "name": "Expr",
+      "rules": [["Value", "Operator", "Value"], ["Value"]]
+    },
+    {
+      "name": "Value",
+      "rules": [["::1"], ["::\"String\""], ["::true"], ["::3.", "::141"]]
+    },
+    {
+      "name": "Operator",
+      "rules": [["::+"]]
+    }
+  ]
+}

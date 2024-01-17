@@ -1,6 +1,9 @@
 # CMake build directory. Created by instructions in
 # website/public/contribute/build-from-source/... and plugin/vscode/BUILDING.md.
 /build-tools/
+/build-fuzz/
+/build-win/
+/build-deb/
 /build/
 
 # Nix symlink. Created by instructions in docs/BUILDING.md.
@@ -12,3 +15,8 @@
 # Relevant only to Dev Environment on Windows
 /.vs
 /out/build/*
+
+tmp/
+fuzz-*.log
+corpus/
+corpus2/

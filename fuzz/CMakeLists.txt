@@ -42,6 +42,9 @@ if (QUICK_LINT_JS_ENABLE_LLVM_LIBFUZZER_TESTS)
 
   quick_lint_js_add_fuzz_executable(quick-lint-js-fuzz-utf-8-lsp fuzz-utf-8-lsp.cpp)
   target_link_libraries(quick-lint-js-fuzz-utf-8-lsp PRIVATE quick-lint-js-lib)
+
+  quick_lint_js_add_executable(test-dev test.cpp generated.cpp)
+  target_link_libraries(test-dev PRIVATE quick-lint-js-lib)
 endif ()
 
 # quick-lint-js finds bugs in JavaScript programs.
