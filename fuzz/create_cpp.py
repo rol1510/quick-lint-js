@@ -13,6 +13,8 @@ NOTE = """/************************************************/
 
 max_child_count = 0
 
+DEBUG_BYTE_CONSUMED = True
+
 class Symbol:
     def __init__(self, symbol):
         self.symbol = symbol.replace('"', '\\"')
@@ -45,7 +47,7 @@ class Production:
 
 
 def make_class_name(production):
-    return f"Prod{production.name}"
+    return f"Producer{production.name}"
 
 PRODUCE_ARGS = "uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue"
 RENDER_ARGS = "std::stringstream &out";
@@ -75,6 +77,9 @@ def make_class_implementation(production):
     # --- produce() ---
     res.append(f"void {class_name}::produce({PRODUCE_ARGS}) {{")
     res.append("this->byte = byte;")
+
+    if DEBUG_BYTE_CONSUMED:
+        res.append(f"std::cout << \"byte \" << (int)byte << \" consumed in {class_name}\" << std::endl;")
 
     for symbol_list, value in zip(production.rules, values):
         add_produce_rule(res, value, symbol_list)
@@ -109,7 +114,7 @@ def add_produce_rule(res, value, symbol_list ):
             class_name = make_class_name(Production(symbol.symbol, []))
             res.append("{") # scope start
             res.append(f"{class_name} *node = memory.new_object<{class_name}>();")
-            res.append(f"QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT - 1);")
+            res.append(f"QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT);")
             res.append(f"this->children[this->num_children++] = node;")
             res.append(f"queue.push_back(node);")
             res.append("}") # scope end
@@ -161,6 +166,9 @@ def make_implementation(productions):
         f'#include "{HEADER_FILE_NAME}"\n\n',
         f"#define MAX_CHILD_COUNT {max_child_count}\n\n",
     ]
+
+    if DEBUG_BYTE_CONSUMED:
+        res.append('#include <iostream>\n\n');
 
     for c in classes:
         res.append("\n".join(c))

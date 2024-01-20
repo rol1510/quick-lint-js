@@ -1,6 +1,14 @@
 {
   "productions": [
     {
+      "name": "StmtList",
+      "rules": [["Stmt", "StmtList"], ["Stmt"]]
+    },
+    {
+      "name": "Stmt",
+      "rules": [["Expr", "::;\\n"]]
+    },
+    {
       "name": "Expr",
       "rules": [["Value", "Operator", "Value"], ["Value"]]
     },

@@ -9,7 +9,7 @@
 #include "tree.h"
 
 
-class ProdExpr : public Node {
+class ProducerStmtList : public Node {
 uint8_t byte;
 public:
 void produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue);
@@ -18,7 +18,7 @@ void render(std::stringstream &out);
 
 
 
-class ProdValue : public Node {
+class ProducerStmt : public Node {
 uint8_t byte;
 public:
 void produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue);
@@ -27,7 +27,25 @@ void render(std::stringstream &out);
 
 
 
-class ProdOperator : public Node {
+class ProducerExpr : public Node {
+uint8_t byte;
+public:
+void produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue);
+void render(std::stringstream &out);
+};
+
+
+
+class ProducerValue : public Node {
+uint8_t byte;
+public:
+void produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue);
+void render(std::stringstream &out);
+};
+
+
+
+class ProducerOperator : public Node {
 uint8_t byte;
 public:
 void produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue);

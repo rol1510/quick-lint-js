@@ -49,39 +49,39 @@ class Node {
 //   }
 // };
 
-class StmtList : public Node {
-  uint8_t byte;
+// class StmtList : public Node {
+//   uint8_t byte;
 
- public:
-  void produce(uint8_t byte, quick_lint_js::Memory_Resource &memory,
-               std::vector<Node *> &queue) {
-    this->byte = byte;
-    if (byte < 128) {
-      StmtList *node = memory.new_object<StmtList>();
-      QLJS_ASSERT(this->num_children < MAX_CHILDREN - 1);
-      this->children[this->num_children++] = node;
-      queue.push_back(node);
-    } else {
-      // printf("end reached\n");
-      // QLJS_ASSERT(false);
-    }
-  }
+//  public:
+//   void produce(uint8_t byte, quick_lint_js::Memory_Resource &memory,
+//                std::vector<Node *> &queue) {
+//     this->byte = byte;
+//     if (byte < 128) {
+//       StmtList *node = memory.new_object<StmtList>();
+//       QLJS_ASSERT(this->num_children < MAX_CHILDREN - 1);
+//       this->children[this->num_children++] = node;
+//       queue.push_back(node);
+//     } else {
+//       // printf("end reached\n");
+//       // QLJS_ASSERT(false);
+//     }
+//   }
 
-  void render(std::stringstream &out) {
-    if (this->is_default) {
-      out << "default";
-      return;
-    }
+//   void render(std::stringstream &out) {
+//     if (this->is_default) {
+//       out << "default";
+//       return;
+//     }
 
-    if (byte < 128) {
-      out << "StmtList_1(" << (int32_t)this->byte << ": ";
-      this->children[0]->render(out);
-      out << ")";
-    } else {
-      out << "StmtList_2()";
-    }
-  }
-};
+//     if (byte < 128) {
+//       out << "StmtList_1(" << (int32_t)this->byte << ": ";
+//       this->children[0]->render(out);
+//       out << ")";
+//     } else {
+//       out << "StmtList_2()";
+//     }
+//   }
+// };
 
 // class ProdExpr;
 // class ProdValue;
