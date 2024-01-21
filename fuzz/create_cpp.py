@@ -38,22 +38,23 @@ class SymbolList:
 
 
 class Production:
-    def __init__(self, name, rules):
+    def __init__(self, name, rules, default):
         self.name = name
         self.rules = [SymbolList(symbols) for symbols in rules]
+        self.default = Symbol(default)
 
     def __repr__(self):
         return f"{self.name} -> {self.rules}"
 
 
-def make_class_name(production):
-    return f"Producer{production.name}"
+def make_class_name(name):
+    return f"Producer{name}"
 
 PRODUCE_ARGS = "uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue"
 RENDER_ARGS = "std::stringstream &out";
 
 def make_class_definition(production):
-    class_name = make_class_name(production)
+    class_name = make_class_name(production.name)
     # head
     res = [
         f"class {class_name} : public Node {{",
@@ -70,7 +71,7 @@ def make_class_definition(production):
 
 
 def make_class_implementation(production):
-    class_name = make_class_name(production)
+    class_name = make_class_name(production.name)
     values = evenly_spaced_values(len(production.rules))
     res = []
 
@@ -79,7 +80,7 @@ def make_class_implementation(production):
     res.append("this->byte = byte;")
 
     if DEBUG_BYTE_CONSUMED:
-        res.append(f"std::cout << \"byte \" << (int)byte << \" consumed in {class_name}\" << std::endl;")
+        res.append(f"std::cerr << \"byte \" << (int)byte << \" consumed in {class_name}\" << std::endl;")
 
     for symbol_list, value in zip(production.rules, values):
         add_produce_rule(res, value, symbol_list)
@@ -90,11 +91,12 @@ def make_class_implementation(production):
 
     # --- render() ---
     res.append(f"void {class_name}::render({RENDER_ARGS}) {{")
-    res.append("""
-        if (this->is_default) {
-            out << "default";
-            return;
-        }""")
+    res.append("if (this->is_default) {")
+
+    assert production.default.is_terminal
+    res.append(f"out << \"{production.default.symbol}\";")
+
+    res.append("return; }")
 
     for symbol_list, value in zip(production.rules, values):
         add_render_rule(res, value, symbol_list)
@@ -111,7 +113,7 @@ def add_produce_rule(res, value, symbol_list ):
         if symbol.is_terminal:
             pass # nothing to do, this will be handled directly in the render function
         else:
-            class_name = make_class_name(Production(symbol.symbol, []))
+            class_name = make_class_name(symbol.symbol)
             res.append("{") # scope start
             res.append(f"{class_name} *node = memory.new_object<{class_name}>();")
             res.append(f"QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT);")
@@ -182,7 +184,7 @@ def main():
         grammar_file = json.load(grammar_file)
 
     g = grammar_file["productions"]
-    productions = [Production(x["name"], x["rules"]) for x in g]
+    productions = [Production(x["name"], x["rules"], x["default"]) for x in g]
 
     header = make_header(productions)
     implementation = make_implementation(productions)

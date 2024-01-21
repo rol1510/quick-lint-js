@@ -11,18 +11,18 @@ void random_bytes(std::uint8_t *bytes, std::size_t len) {
   }
 }
 
-int main() {
-  srand(69);
+int main(int argc, char **argv) {
+  srand(69 + argc);
 
-  std::uint8_t bytes[8];
+  std::uint8_t bytes[800];
   std::size_t bytes_len = LENGTH(bytes);
   random_bytes(bytes, bytes_len);
 
-  std::cout << "bytes:  ";
+  std::cerr << "bytes:  ";
   for (std::size_t i = 0; i < bytes_len; i++) {
-    std::cout << (int)bytes[i] << " ";
+    std::cerr << (int)bytes[i] << " ";
   }
-  std::cout << std::endl;
+  std::cerr << std::endl;
 
   // using a vector and not a queue because we need to access random elements
   std::vector<Node *> queue;
@@ -32,21 +32,27 @@ int main() {
   queue.push_back(root_stmt_list);
 
   for (std::size_t i = 0; i < bytes_len; i++) {
-    std::cout << "iteration " << i << " queue size:  " << queue.size()
+    std::cerr << "iteration " << i << " queue size:  " << queue.size()
               << std::endl;
 
-    queue[0]->produce(bytes[i], allocator, queue);
-    queue.erase(queue.begin());
+    if (queue.size() > 0) {
+      queue[0]->produce(bytes[i], allocator, queue);
+      queue.erase(queue.begin());
+    } else {
+      std::cerr << "Finished prematurely :(" << std::endl;
+      std::cerr << "bytes left: " << bytes_len - i << std::endl;
+      break;
+    }
   }
 
-  std::cout << "queue size after loop:  " << queue.size() << std::endl;
+  std::cerr << "queue size after loop:  " << queue.size() << std::endl;
 
   while (queue.size() > 0) {
     queue[0]->produceDefault(allocator);
     queue.erase(queue.begin());
   }
 
-  std::cout << "----------------------------------------"
+  std::cerr << "----------------------------------------"
                "----------------------------------------"
             << std::endl;
 

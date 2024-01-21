@@ -2,23 +2,42 @@
   "productions": [
     {
       "name": "StmtList",
-      "rules": [["Stmt", "StmtList"], ["Stmt"]]
+      "rules": [["Stmt", "StmtList"], ["Stmt", "StmtList"], ["Stmt"]],
+      "default": "::/* default StmtList */"
     },
     {
       "name": "Stmt",
-      "rules": [["Expr", "::;\\n"]]
+      "rules": [["Expr", "::;\\n"]],
+      "default": "::/* default Stmt */"
     },
     {
       "name": "Expr",
-      "rules": [["Value", "Operator", "Value"], ["Value"]]
+      "rules": [["Expr", "Operator", "Expr"], ["Value"]],
+      "default": "::12"
     },
     {
       "name": "Value",
-      "rules": [["::1"], ["::\"String\""], ["::true"], ["::3.", "::141"]]
+      "rules": [["::1"], ["::\"String\""], ["::true"], ["::3.", "::141"]],
+      "default": "::1"
     },
     {
       "name": "Operator",
-      "rules": [["::+"]]
+      "rules": [
+        ["::+"],
+        ["::-"],
+        ["::*"],
+        ["::/"],
+        ["::%"],
+        ["::=="],
+        ["::!="],
+        ["::<"],
+        ["::>"],
+        ["::<="],
+        ["::>="],
+        ["::&&"],
+        ["::||"]
+      ],
+      "default": "::+"
     }
   ]
 }

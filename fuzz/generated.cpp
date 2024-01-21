@@ -14,8 +14,23 @@
 
 void ProducerStmtList::produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue) {
 this->byte = byte;
-std::cout << "byte " << (int)byte << " consumed in ProducerStmtList" << std::endl;
-if (byte < 128) {
+std::cerr << "byte " << (int)byte << " consumed in ProducerStmtList" << std::endl;
+if (byte < 85) {
+{
+ProducerStmt *node = memory.new_object<ProducerStmt>();
+QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT);
+this->children[this->num_children++] = node;
+queue.push_back(node);
+}
+{
+ProducerStmtList *node = memory.new_object<ProducerStmtList>();
+QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT);
+this->children[this->num_children++] = node;
+queue.push_back(node);
+}
+}
+else
+if (byte < 170) {
 {
 ProducerStmt *node = memory.new_object<ProducerStmt>();
 QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT);
@@ -40,12 +55,15 @@ queue.push_back(node);
 }
 }
 void ProducerStmtList::render(std::stringstream &out) {
-
-        if (this->is_default) {
-            out << "default";
-            return;
-        }
-if (byte < 128) {
+if (this->is_default) {
+out << "/* default StmtList */";
+return; }
+if (byte < 85) {
+this->children[0]->render(out);
+this->children[1]->render(out);
+}
+else
+if (byte < 170) {
 this->children[0]->render(out);
 this->children[1]->render(out);
 }
@@ -59,7 +77,7 @@ this->children[0]->render(out);
 
 void ProducerStmt::produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue) {
 this->byte = byte;
-std::cout << "byte " << (int)byte << " consumed in ProducerStmt" << std::endl;
+std::cerr << "byte " << (int)byte << " consumed in ProducerStmt" << std::endl;
 if (byte < 256) {
 {
 ProducerExpr *node = memory.new_object<ProducerExpr>();
@@ -70,11 +88,9 @@ queue.push_back(node);
 }
 }
 void ProducerStmt::render(std::stringstream &out) {
-
-        if (this->is_default) {
-            out << "default";
-            return;
-        }
+if (this->is_default) {
+out << "/* default Stmt */";
+return; }
 if (byte < 256) {
 this->children[0]->render(out);
 out << ";\n";
@@ -85,10 +101,10 @@ out << ";\n";
 
 void ProducerExpr::produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue) {
 this->byte = byte;
-std::cout << "byte " << (int)byte << " consumed in ProducerExpr" << std::endl;
+std::cerr << "byte " << (int)byte << " consumed in ProducerExpr" << std::endl;
 if (byte < 128) {
 {
-ProducerValue *node = memory.new_object<ProducerValue>();
+ProducerExpr *node = memory.new_object<ProducerExpr>();
 QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT);
 this->children[this->num_children++] = node;
 queue.push_back(node);
@@ -100,7 +116,7 @@ this->children[this->num_children++] = node;
 queue.push_back(node);
 }
 {
-ProducerValue *node = memory.new_object<ProducerValue>();
+ProducerExpr *node = memory.new_object<ProducerExpr>();
 QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT);
 this->children[this->num_children++] = node;
 queue.push_back(node);
@@ -117,11 +133,9 @@ queue.push_back(node);
 }
 }
 void ProducerExpr::render(std::stringstream &out) {
-
-        if (this->is_default) {
-            out << "default";
-            return;
-        }
+if (this->is_default) {
+out << "12";
+return; }
 if (byte < 128) {
 this->children[0]->render(out);
 this->children[1]->render(out);
@@ -137,7 +151,7 @@ this->children[0]->render(out);
 
 void ProducerValue::produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue) {
 this->byte = byte;
-std::cout << "byte " << (int)byte << " consumed in ProducerValue" << std::endl;
+std::cerr << "byte " << (int)byte << " consumed in ProducerValue" << std::endl;
 if (byte < 64) {
 }
 else
@@ -151,11 +165,9 @@ if (byte < 256) {
 }
 }
 void ProducerValue::render(std::stringstream &out) {
-
-        if (this->is_default) {
-            out << "default";
-            return;
-        }
+if (this->is_default) {
+out << "1";
+return; }
 if (byte < 64) {
 out << "1";
 }
@@ -178,18 +190,100 @@ out << "141";
 
 void ProducerOperator::produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue) {
 this->byte = byte;
-std::cout << "byte " << (int)byte << " consumed in ProducerOperator" << std::endl;
+std::cerr << "byte " << (int)byte << " consumed in ProducerOperator" << std::endl;
+if (byte < 19) {
+}
+else
+if (byte < 39) {
+}
+else
+if (byte < 59) {
+}
+else
+if (byte < 78) {
+}
+else
+if (byte < 98) {
+}
+else
+if (byte < 118) {
+}
+else
+if (byte < 137) {
+}
+else
+if (byte < 157) {
+}
+else
+if (byte < 177) {
+}
+else
+if (byte < 196) {
+}
+else
+if (byte < 216) {
+}
+else
+if (byte < 236) {
+}
+else
 if (byte < 256) {
 }
 }
 void ProducerOperator::render(std::stringstream &out) {
-
-        if (this->is_default) {
-            out << "default";
-            return;
-        }
-if (byte < 256) {
+if (this->is_default) {
 out << "+";
+return; }
+if (byte < 19) {
+out << "+";
+}
+else
+if (byte < 39) {
+out << "-";
+}
+else
+if (byte < 59) {
+out << "*";
+}
+else
+if (byte < 78) {
+out << "/";
+}
+else
+if (byte < 98) {
+out << "%";
+}
+else
+if (byte < 118) {
+out << "==";
+}
+else
+if (byte < 137) {
+out << "!=";
+}
+else
+if (byte < 157) {
+out << "<";
+}
+else
+if (byte < 177) {
+out << ">";
+}
+else
+if (byte < 196) {
+out << "<=";
+}
+else
+if (byte < 216) {
+out << ">=";
+}
+else
+if (byte < 236) {
+out << "&&";
+}
+else
+if (byte < 256) {
+out << "||";
 }
 }
 
