@@ -17,9 +17,9 @@
       "name": "Expr",
       "rules": [
         { "bias": 1, "rule": ["Expr", "Operator", "Expr"] },
-        { "bias": 1.5, "rule": ["Value"] }
+        { "bias": 2, "rule": ["Value"] }
       ],
-      "default": "::12"
+      "default": "::12 /* default Expr */"
     },
     {
       "name": "Value",
@@ -29,7 +29,7 @@
         { "bias": 1.0, "rule": ["::true"] },
         { "bias": 1.0, "rule": ["::3.", "::141"] }
       ],
-      "default": "::1"
+      "default": "::1 /* default Value */"
     },
     {
       "name": "Operator",
@@ -48,7 +48,7 @@
         { "bias": 1.0, "rule": ["::&&"] },
         { "bias": 1.0, "rule": ["::||"] }
       ],
-      "default": "::+"
+      "default": "::+ /* default Operator */"
     }
   ]
 }

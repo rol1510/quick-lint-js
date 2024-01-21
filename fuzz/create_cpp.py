@@ -86,10 +86,8 @@ def make_class_implementation(production):
     if DEBUG_BYTE_CONSUMED:
         res.append(f"std::cerr << \"byte \" << (int)byte << \" consumed in {class_name}\" << std::endl;")
 
-    for symbol_list, value in zip(production.rules, values):
-        add_produce_rule(res, value, symbol_list)
-        res.append("else")
-    res.pop()  # remove last else
+    for if_keyword,symbol_list, value in if_statement_keywords(zip(production.rules, values)):
+        add_produce_rule(res, value, symbol_list, if_keyword)
 
     res.append("}")
 
@@ -102,17 +100,19 @@ def make_class_implementation(production):
 
     res.append("return; }")
 
-    for symbol_list, value in zip(production.rules, values):
-        add_render_rule(res, value, symbol_list)
-        res.append("else")
-    res.pop()  # remove last else
+    for if_keyword, symbol_list, value in if_statement_keywords(zip(production.rules, values)):
+        add_render_rule(res, value, symbol_list, if_keyword)
 
     res.append("}")
 
     return res
 
-def add_produce_rule(res, value, symbol_list ):
-    res.append(f"if (byte < {value}) {{")
+def add_produce_rule(res, value, symbol_list, if_keyword):
+    if if_keyword == "else":
+        res.append("else {")
+    else:
+        res.append(f"{if_keyword} (byte < {value}) {{")
+
     for symbol in symbol_list:
         if symbol.is_terminal:
             pass # nothing to do, this will be handled directly in the render function
@@ -126,8 +126,12 @@ def add_produce_rule(res, value, symbol_list ):
             res.append("}") # scope end
     res.append("}")
 
-def add_render_rule(res, value, symbol_list ):
-    res.append(f"if (byte < {value}) {{")
+def add_render_rule(res, value, symbol_list, if_keyword):
+    if if_keyword == "else":
+        res.append("else {")
+    else:
+        res.append(f"{if_keyword} (byte < {value}) {{")
+
     non_term_count = 0;
     for symbol in symbol_list:
         if symbol.is_terminal:
@@ -139,6 +143,17 @@ def add_render_rule(res, value, symbol_list ):
 
     global max_child_count
     max_child_count = max(max_child_count, non_term_count)
+
+def if_statement_keywords(generator):
+    l = list(generator)
+    size = len(l)
+    for i, val in enumerate(l):
+        if i == 0:
+            yield "if", *val
+        elif i == size - 1:
+            yield "else", *val
+        else:
+            yield "else if", *val
 
 def evenly_spaced_values(n):
     return [(i + 1) * 256 // n for i in range(n)]

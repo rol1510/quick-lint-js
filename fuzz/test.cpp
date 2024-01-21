@@ -26,10 +26,12 @@ int main(int argc, char **argv) {
 
   // using a vector and not a queue because we need to access random elements
   std::vector<Node *> queue;
+  std::vector<ProducerStmtList *> root_nodes;
   quick_lint_js::Linked_Bump_Allocator allocator("test");
 
   ProducerStmtList *root_stmt_list = allocator.new_object<ProducerStmtList>();
   queue.push_back(root_stmt_list);
+  root_nodes.push_back(root_stmt_list);
 
   for (std::size_t i = 0; i < bytes_len; i++) {
     std::cerr << "iteration " << i << " queue size:  " << queue.size()
@@ -41,7 +43,11 @@ int main(int argc, char **argv) {
     } else {
       std::cerr << "Finished prematurely :(" << std::endl;
       std::cerr << "bytes left: " << bytes_len - i << std::endl;
-      break;
+
+      ProducerStmtList *root_stmt_list =
+          allocator.new_object<ProducerStmtList>();
+      queue.push_back(root_stmt_list);
+      root_nodes.push_back(root_stmt_list);
     }
   }
 
@@ -57,7 +63,9 @@ int main(int argc, char **argv) {
             << std::endl;
 
   std::stringstream out;
-  root_stmt_list->render(out);
+  for (ProducerStmtList *node : root_nodes) {
+    node->render(out);
+  }
   std::cout << out.str() << std::endl;
 
   return 0;
