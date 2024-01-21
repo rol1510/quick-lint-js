@@ -1,9 +1,10 @@
 import json
 import os
+import sys
 import math
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-GRAMMAR_FILE_PATH = os.path.join(SCRIPT_DIR, "grammar.json")
+# GRAMMAR_FILE_PATH = os.path.join(SCRIPT_DIR, "grammar.json")
 HEADER_FILE_NAME = "generated.h"
 OUTPUT_FILE_PATH_HEADER = os.path.join(SCRIPT_DIR, HEADER_FILE_NAME)
 OUTPUT_FILE_PATH_CPP = os.path.join(SCRIPT_DIR, "generated.cpp")
@@ -14,7 +15,7 @@ NOTE = """/************************************************/
 
 max_child_count = 0
 
-DEBUG_BYTE_CONSUMED = True
+DEBUG_BYTE_CONSUMED = False
 
 
 class Symbol:
@@ -234,7 +235,12 @@ def make_implementation(productions):
 
 
 def main():
-    with open(GRAMMAR_FILE_PATH, "r") as grammar_file:
+    if len(sys.argv) != 2:
+        print("Usage: python create_cpp.py <grammar_file>")
+        exit(1)
+    grammar_file_path = sys.argv[1]
+
+    with open(grammar_file_path, "r") as grammar_file:
         grammar_file = json.load(grammar_file)
 
     g = grammar_file["productions"]
