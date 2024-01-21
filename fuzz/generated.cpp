@@ -15,22 +15,7 @@
 void ProducerStmtList::produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue) {
 this->byte = byte;
 std::cerr << "byte " << (int)byte << " consumed in ProducerStmtList" << std::endl;
-if (byte < 85) {
-{
-ProducerStmt *node = memory.new_object<ProducerStmt>();
-QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT);
-this->children[this->num_children++] = node;
-queue.push_back(node);
-}
-{
-ProducerStmtList *node = memory.new_object<ProducerStmtList>();
-QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT);
-this->children[this->num_children++] = node;
-queue.push_back(node);
-}
-}
-else
-if (byte < 170) {
+if (byte < 171) {
 {
 ProducerStmt *node = memory.new_object<ProducerStmt>();
 QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT);
@@ -58,12 +43,7 @@ void ProducerStmtList::render(std::stringstream &out) {
 if (this->is_default) {
 out << "/* default StmtList */";
 return; }
-if (byte < 85) {
-this->children[0]->render(out);
-this->children[1]->render(out);
-}
-else
-if (byte < 170) {
+if (byte < 171) {
 this->children[0]->render(out);
 this->children[1]->render(out);
 }
@@ -102,7 +82,7 @@ out << ";\n";
 void ProducerExpr::produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue) {
 this->byte = byte;
 std::cerr << "byte " << (int)byte << " consumed in ProducerExpr" << std::endl;
-if (byte < 128) {
+if (byte < 102) {
 {
 ProducerExpr *node = memory.new_object<ProducerExpr>();
 QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT);
@@ -136,7 +116,7 @@ void ProducerExpr::render(std::stringstream &out) {
 if (this->is_default) {
 out << "12";
 return; }
-if (byte < 128) {
+if (byte < 102) {
 this->children[0]->render(out);
 this->children[1]->render(out);
 this->children[2]->render(out);
@@ -191,7 +171,7 @@ out << "141";
 void ProducerOperator::produce(uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue) {
 this->byte = byte;
 std::cerr << "byte " << (int)byte << " consumed in ProducerOperator" << std::endl;
-if (byte < 19) {
+if (byte < 20) {
 }
 else
 if (byte < 39) {
@@ -200,7 +180,7 @@ else
 if (byte < 59) {
 }
 else
-if (byte < 78) {
+if (byte < 79) {
 }
 else
 if (byte < 98) {
@@ -209,19 +189,19 @@ else
 if (byte < 118) {
 }
 else
-if (byte < 137) {
+if (byte < 138) {
 }
 else
-if (byte < 157) {
+if (byte < 158) {
 }
 else
 if (byte < 177) {
 }
 else
-if (byte < 196) {
+if (byte < 197) {
 }
 else
-if (byte < 216) {
+if (byte < 217) {
 }
 else
 if (byte < 236) {
@@ -234,7 +214,7 @@ void ProducerOperator::render(std::stringstream &out) {
 if (this->is_default) {
 out << "+";
 return; }
-if (byte < 19) {
+if (byte < 20) {
 out << "+";
 }
 else
@@ -246,7 +226,7 @@ if (byte < 59) {
 out << "*";
 }
 else
-if (byte < 78) {
+if (byte < 79) {
 out << "/";
 }
 else
@@ -258,11 +238,11 @@ if (byte < 118) {
 out << "==";
 }
 else
-if (byte < 137) {
+if (byte < 138) {
 out << "!=";
 }
 else
-if (byte < 157) {
+if (byte < 158) {
 out << "<";
 }
 else
@@ -270,11 +250,11 @@ if (byte < 177) {
 out << ">";
 }
 else
-if (byte < 196) {
+if (byte < 197) {
 out << "<=";
 }
 else
-if (byte < 216) {
+if (byte < 217) {
 out << ">=";
 }
 else

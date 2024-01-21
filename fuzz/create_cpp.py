@@ -1,5 +1,6 @@
 import json
 import os
+import math
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 GRAMMAR_FILE_PATH = os.path.join(SCRIPT_DIR, "grammar.json")
@@ -40,7 +41,8 @@ class SymbolList:
 class Production:
     def __init__(self, name, rules, default):
         self.name = name
-        self.rules = [SymbolList(symbols) for symbols in rules]
+        self.rules = [SymbolList(x['rule']) for x in rules]
+        self.biasses = [float(x['bias']) for x in rules]
         self.default = Symbol(default)
 
     def __repr__(self):
@@ -72,7 +74,9 @@ def make_class_definition(production):
 
 def make_class_implementation(production):
     class_name = make_class_name(production.name)
-    values = evenly_spaced_values(len(production.rules))
+    # values = evenly_spaced_values(len(production.rules))
+    values = biased_values(production.biasses)
+    print(values);
     res = []
 
     # --- produce() ---
@@ -138,6 +142,22 @@ def add_render_rule(res, value, symbol_list ):
 
 def evenly_spaced_values(n):
     return [(i + 1) * 256 // n for i in range(n)]
+
+def biased_values(biasses):
+    normailized = normalize_numbers(biasses)
+    acc = 0
+    res = []
+    for n in normailized:
+        acc += n
+        res.append(round(256 * acc))
+
+    assert res[-1] == 256
+
+    return res
+
+def normalize_numbers(numbers):
+    s = sum(numbers)
+    return [n / s for n in numbers]
 
 def make_header(productions):
     classes = []

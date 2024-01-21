@@ -2,40 +2,51 @@
   "productions": [
     {
       "name": "StmtList",
-      "rules": [["Stmt", "StmtList"], ["Stmt", "StmtList"], ["Stmt"]],
+      "rules": [
+        { "bias": 2.0, "rule": ["Stmt", "StmtList"] },
+        { "bias": 1.0, "rule": ["Stmt"] }
+      ],
       "default": "::/* default StmtList */"
     },
     {
       "name": "Stmt",
-      "rules": [["Expr", "::;\\n"]],
+      "rules": [{ "bias": 1.0, "rule": ["Expr", "::;\\n"] }],
       "default": "::/* default Stmt */"
     },
     {
       "name": "Expr",
-      "rules": [["Expr", "Operator", "Expr"], ["Value"]],
+      "rules": [
+        { "bias": 1, "rule": ["Expr", "Operator", "Expr"] },
+        { "bias": 1.5, "rule": ["Value"] }
+      ],
       "default": "::12"
     },
     {
       "name": "Value",
-      "rules": [["::1"], ["::\"String\""], ["::true"], ["::3.", "::141"]],
+      "rules": [
+        { "bias": 1.0, "rule": ["::1"] },
+        { "bias": 1.0, "rule": ["::\"String\""] },
+        { "bias": 1.0, "rule": ["::true"] },
+        { "bias": 1.0, "rule": ["::3.", "::141"] }
+      ],
       "default": "::1"
     },
     {
       "name": "Operator",
       "rules": [
-        ["::+"],
-        ["::-"],
-        ["::*"],
-        ["::/"],
-        ["::%"],
-        ["::=="],
-        ["::!="],
-        ["::<"],
-        ["::>"],
-        ["::<="],
-        ["::>="],
-        ["::&&"],
-        ["::||"]
+        { "bias": 1.0, "rule": ["::+"] },
+        { "bias": 1.0, "rule": ["::-"] },
+        { "bias": 1.0, "rule": ["::*"] },
+        { "bias": 1.0, "rule": ["::/"] },
+        { "bias": 1.0, "rule": ["::%"] },
+        { "bias": 1.0, "rule": ["::=="] },
+        { "bias": 1.0, "rule": ["::!="] },
+        { "bias": 1.0, "rule": ["::<"] },
+        { "bias": 1.0, "rule": ["::>"] },
+        { "bias": 1.0, "rule": ["::<="] },
+        { "bias": 1.0, "rule": ["::>="] },
+        { "bias": 1.0, "rule": ["::&&"] },
+        { "bias": 1.0, "rule": ["::||"] }
       ],
       "default": "::+"
     }
