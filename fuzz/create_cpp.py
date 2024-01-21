@@ -16,11 +16,12 @@ max_child_count = 0
 
 DEBUG_BYTE_CONSUMED = True
 
+
 class Symbol:
     def __init__(self, symbol):
         self.symbol = symbol.replace('"', '\\"')
         self.is_terminal = self.symbol.startswith("::")
-        if (self.is_terminal):
+        if self.is_terminal:
             self.symbol = self.symbol[2:]
 
     def __repr__(self):
@@ -41,8 +42,8 @@ class SymbolList:
 class Production:
     def __init__(self, name, rules, default):
         self.name = name
-        self.rules = [SymbolList(x['rule']) for x in rules]
-        self.biasses = [float(x['bias']) for x in rules]
+        self.rules = [SymbolList(x["rule"]) for x in rules]
+        self.biasses = [float(x["bias"]) for x in rules]
         self.default = Symbol(default)
 
     def __repr__(self):
@@ -52,8 +53,12 @@ class Production:
 def make_class_name(name):
     return f"Producer{name}"
 
-PRODUCE_ARGS = "uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue"
-RENDER_ARGS = "std::stringstream &out";
+
+PRODUCE_ARGS = (
+    "uint8_t byte, quick_lint_js::Memory_Resource &memory, std::vector<Node *> &queue"
+)
+RENDER_ARGS = "std::stringstream &out"
+
 
 def make_class_definition(production):
     class_name = make_class_name(production.name)
@@ -76,7 +81,7 @@ def make_class_implementation(production):
     class_name = make_class_name(production.name)
     # values = evenly_spaced_values(len(production.rules))
     values = biased_values(production.biasses)
-    print(values);
+    print(values)
     res = []
 
     # --- produce() ---
@@ -84,9 +89,13 @@ def make_class_implementation(production):
     res.append("this->byte = byte;")
 
     if DEBUG_BYTE_CONSUMED:
-        res.append(f"std::cerr << \"byte \" << (int)byte << \" consumed in {class_name}\" << std::endl;")
+        res.append(
+            f'std::cerr << "byte " << (int)byte << " consumed in {class_name}" << std::endl;'
+        )
 
-    for if_keyword,symbol_list, value in if_statement_keywords(zip(production.rules, values)):
+    for if_keyword, symbol_list, value in if_statement_keywords(
+        zip(production.rules, values)
+    ):
         add_produce_rule(res, value, symbol_list, if_keyword)
 
     res.append("}")
@@ -96,16 +105,19 @@ def make_class_implementation(production):
     res.append("if (this->is_default) {")
 
     assert production.default.is_terminal
-    res.append(f"out << \"{production.default.symbol}\";")
+    res.append(f'out << "{production.default.symbol}";')
 
     res.append("return; }")
 
-    for if_keyword, symbol_list, value in if_statement_keywords(zip(production.rules, values)):
+    for if_keyword, symbol_list, value in if_statement_keywords(
+        zip(production.rules, values)
+    ):
         add_render_rule(res, value, symbol_list, if_keyword)
 
     res.append("}")
 
     return res
+
 
 def add_produce_rule(res, value, symbol_list, if_keyword):
     if if_keyword == "else":
@@ -115,16 +127,17 @@ def add_produce_rule(res, value, symbol_list, if_keyword):
 
     for symbol in symbol_list:
         if symbol.is_terminal:
-            pass # nothing to do, this will be handled directly in the render function
+            pass  # nothing to do, this will be handled directly in the render function
         else:
             class_name = make_class_name(symbol.symbol)
-            res.append("{") # scope start
+            res.append("{")  # scope start
             res.append(f"{class_name} *node = memory.new_object<{class_name}>();")
             res.append(f"QLJS_ASSERT(this->num_children < MAX_CHILD_COUNT);")
             res.append(f"this->children[this->num_children++] = node;")
             res.append(f"queue.push_back(node);")
-            res.append("}") # scope end
+            res.append("}")  # scope end
     res.append("}")
+
 
 def add_render_rule(res, value, symbol_list, if_keyword):
     if if_keyword == "else":
@@ -132,10 +145,10 @@ def add_render_rule(res, value, symbol_list, if_keyword):
     else:
         res.append(f"{if_keyword} (byte < {value}) {{")
 
-    non_term_count = 0;
+    non_term_count = 0
     for symbol in symbol_list:
         if symbol.is_terminal:
-            res.append(f"out << \"{symbol.symbol}\";")
+            res.append(f'out << "{symbol.symbol}";')
         else:
             res.append(f"this->children[{non_term_count}]->render(out);")
             non_term_count += 1
@@ -143,6 +156,7 @@ def add_render_rule(res, value, symbol_list, if_keyword):
 
     global max_child_count
     max_child_count = max(max_child_count, non_term_count)
+
 
 def if_statement_keywords(generator):
     l = list(generator)
@@ -155,8 +169,10 @@ def if_statement_keywords(generator):
         else:
             yield "else if", *val
 
+
 def evenly_spaced_values(n):
     return [(i + 1) * 256 // n for i in range(n)]
+
 
 def biased_values(biasses):
     normailized = normalize_numbers(biasses)
@@ -170,9 +186,11 @@ def biased_values(biasses):
 
     return res
 
+
 def normalize_numbers(numbers):
     s = sum(numbers)
     return [n / s for n in numbers]
+
 
 def make_header(productions):
     classes = []
@@ -192,6 +210,7 @@ def make_header(productions):
 
     return "\n".join(res)
 
+
 def make_implementation(productions):
     classes = []
     for production in productions:
@@ -205,7 +224,7 @@ def make_implementation(productions):
     ]
 
     if DEBUG_BYTE_CONSUMED:
-        res.append('#include <iostream>\n\n');
+        res.append("#include <iostream>\n\n")
 
     for c in classes:
         res.append("\n".join(c))
